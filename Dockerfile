@@ -22,7 +22,7 @@ SHELL ["conda", "run", "-n", "visgpt", "/bin/bash", "-c"]
 RUN pip install -r requirements.txt
 
 # Prepare your private OpenAI key
-ENV OPENAI_API_KEY={Your_Private_Openai_Key}
+ENV OPENAI_API_KEY=$OPENAI_API_KEY
 
 # Start Visual ChatGPT
 CMD ["python", "visual_chatgpt.py", "--load", "ImageCaptioning_cpu,Text2Image_cpu"]
