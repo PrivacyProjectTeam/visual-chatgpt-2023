@@ -1,27 +1,24 @@
 FROM python:3.8-slim-buster
 
-# Install mesa packages
-RUN apt-get update && \
-    apt-get install -y --no-install-recommends \
-    libgl1-mesa-glx \
-    && rm -rf /var/lib/apt/lists/*
+# Install Git
+RUN apt-get update && apt-get install -y git
 
 # Clone the repo
 RUN git clone https://github.com/microsoft/visual-chatgpt.git
 
 # Go to directory
-WORKDIR visual-chatgpt
+WORKDIR /visual-chatgpt
 
-# Create a new environment
+# create a new environment
 RUN conda create -n visgpt python=3.8
 
-# Activate the new environment
+# activate the new environment
 SHELL ["conda", "run", "-n", "visgpt", "/bin/bash", "-c"]
 
-# Prepare the basic environments
+# prepare the basic environments
 RUN pip install -r requirements.txt
 
-# Prepare your private OpenAI key
+# prepare your private OpenAI key (for Linux)
 ENV OPENAI_API_KEY=$OPENAI_API_KEY
 
 # Start Visual ChatGPT
