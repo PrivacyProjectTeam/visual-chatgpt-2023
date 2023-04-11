@@ -1,19 +1,23 @@
-FROM continuumio/miniconda3
+FROM python:3.8-slim-buster
 
-RUN apt-get update && \
-    apt-get install -y git
+ENV OPENAI_API_KEY=${OPENAI_API_KEY}
+ENV PYTHONFAULTHANDLER=1 \
+    PYTHONHASHSEED=random \
+    PYTHONUNBUFFERED=1
+
+RUN apt-get update -y
+RUN apt-get install -y git curl wget
 
 RUN git clone https://github.com/microsoft/visual-chatgpt.git
 
-WORKDIR /visual-chatgpt
+WORKDIR /visual-chatgpt/
 
-RUN conda create -n visgpt python=3.8 && \
-    echo "conda activate visgpt" >> ~/.bashrc
+RUN pip install --upgrade pip
+RUN pip install opencv-python
+RUN sed '/opencv/d' requirement.txt > requirement.txt
+RUN pip install -r requirement.txt
+RUN bash download.sh
 
-SHELL ["conda", "run", "-n", "visgpt", "/bin/bash", "-c"]
+RUN mkdir /visual-chatgpt/image && chmod 777 /visual-chatgpt/image
 
-RUN pip install -r requirements.txt
-
-ENV OPENAI_API_KEY={Your_Private_Openai_Key}
-
-CMD ["python", "visual_chatgpt.py", "--load", "ImageCaptioning_cpu,Text2Image_cpu"]
+CMD ["bash", "-c", "python", "visual_chatgpt.py"]
